@@ -1,0 +1,9 @@
+# Source material used to build the site — not part of the published website
+Documents/
+
+# OneDrive / OS / editor cruft
+desktop.ini
+Thumbs.db
+.DS_Store
+~$*
+*.tmp
