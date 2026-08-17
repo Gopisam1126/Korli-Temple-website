@@ -8,9 +8,97 @@
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ── language ──────────────────────────────────────────
+     Both languages are in the DOM; CSS hides the inactive one
+     off [data-lang]. This only flips the attribute + the bits
+     CSS cannot reach (title, aria-labels, lightbox captions). */
+  var STORE = 'korli-lang';
+
+  var STRINGS = {
+    ml: {
+      title:   { 'index.html': 'കോർളി ശ്രീ നരസിംഹമൂർത്തി ക്ഷേത്രം, വെങ്കിടങ്ങ്',
+                 'renovation.html': 'നവീകരണം — കോർളി ശ്രീ നരസിംഹമൂർത്തി ക്ഷേത്രം' },
+      navLbl:  'പ്രധാന മെനു',
+      menuOpen:'മെനു തുറക്കുക',
+      menuShut:'മെനു അടയ്ക്കുക',
+      lbClose: 'അടയ്ക്കുക',
+      lbPrev:  'മുൻപത്തേത്',
+      lbNext:  'അടുത്തത്',
+      copied:  'പകർത്തി: ',
+      copyFail:'പകർത്താൻ കഴിഞ്ഞില്ല',
+      down:    'താഴേക്ക്'
+    },
+    en: {
+      title:   { 'index.html': 'Korli Sri Narasimhamurthy Temple, Venkitangu',
+                 'renovation.html': 'Renovation — Korli Sri Narasimhamurthy Temple' },
+      navLbl:  'Main menu',
+      menuOpen:'Open menu',
+      menuShut:'Close menu',
+      lbClose: 'Close',
+      lbPrev:  'Previous',
+      lbNext:  'Next',
+      copied:  'Copied: ',
+      copyFail:'Could not copy',
+      down:    'Scroll down'
+    }
+  };
+
+  var page = (location.pathname.split('/').pop() || 'index.html');
+  if (page.indexOf('renovation') === 0) page = 'renovation.html';
+  else page = 'index.html';
+
+  var lang = 'ml';
+  try { lang = localStorage.getItem(STORE) || 'ml'; } catch (e) {}
+  if (lang !== 'en') lang = 'ml';
+
+  function t(key) { return STRINGS[lang][key]; }
+
+  function applyLang(next) {
+    lang = (next === 'en') ? 'en' : 'ml';
+    var root = document.documentElement;
+    root.setAttribute('data-lang', lang);
+    root.setAttribute('lang', lang);
+    try { localStorage.setItem(STORE, lang); } catch (e) {}
+
+    document.title = STRINGS[lang].title[page];
+
+    $$('[data-lang-set]').forEach(function (b) {
+      var on = b.dataset.langSet === lang;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+
+    var set = function (sel, val) { var el = $(sel); if (el) el.setAttribute('aria-label', val); };
+    set('#nav',  t('navLbl'));
+    set('#lbX',  t('lbClose'));
+    set('#lbP',  t('lbPrev'));
+    set('#lbN',  t('lbNext'));
+    set('.hero__scroll', t('down'));
+    var burg = $('#burger');
+    if (burg) burg.setAttribute('aria-label',
+      burg.getAttribute('aria-expanded') === 'true' ? t('menuShut') : t('menuOpen'));
+
+    /* lightbox caption, if it is open on a gallery item */
+    var cap = $('#lbCap');
+    if (cap && cap.dataset.ml) cap.textContent = (lang === 'en' && cap.dataset.en) ? cap.dataset.en : cap.dataset.ml;
+  }
+
+  applyLang(lang);
+  $$('[data-lang-set]').forEach(function (b) {
+    b.addEventListener('click', function () { applyLang(b.dataset.langSet); });
+  });
+
   /* ── header: stuck state + scroll progress ─────────────── */
   var hdr      = $('#hdr');
   var progress = $('#progress');
+
+  /* keep the sticky section-tabs sitting exactly under the header */
+  var tabsBar = $('#tabs');
+  function syncHeaderHeight() {
+    if (!hdr) return;
+    document.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px');
+  }
+  if (tabsBar) { syncHeaderHeight(); window.addEventListener('resize', syncHeaderHeight); }
 
   function onScroll() {
     var y = window.scrollY || document.documentElement.scrollTop;
@@ -18,6 +106,10 @@
 
     var max = document.documentElement.scrollHeight - window.innerHeight;
     progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+
+    /* the header shrinks once stuck, so re-measure rather than trusting
+       the taller at-rest height, or the tabs bar sticks too low */
+    if (tabsBar) syncHeaderHeight();
   }
   var ticking = false;
   window.addEventListener('scroll', function () {
@@ -37,20 +129,103 @@
     /* the header's backdrop-filter would otherwise contain the fixed drawer */
     hdr.classList.toggle('is-navopen', open);
     burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'മെനു അടയ്ക്കുക' : 'മെനു തുറക്കുക');
+    burger.setAttribute('aria-label', open ? t('menuShut') : t('menuOpen'));
     document.body.style.overflow = open ? 'hidden' : '';
+    if (!open) closeSubs();
   }
 
   burger.addEventListener('click', function () {
     setNav(!nav.classList.contains('is-open'));
   });
   nav.addEventListener('click', function (e) {
-    if (e.target.closest('a')) setNav(false);
+    var a = e.target.closest('a');
+    if (a && !a.classList.contains('nav__subtoggle')) setNav(false);
   });
   document.addEventListener('click', function (e) {
     if (!nav.classList.contains('is-open')) return;
     if (!e.target.closest('#nav') && !e.target.closest('#burger')) setNav(false);
   });
+
+  /* ── nav submenu ───────────────────────────────────────
+     Hover opens it on pointer devices; the caret is a real
+     button target on touch, where the first tap opens rather
+     than navigating. */
+  var subs = $$('[data-sub]');
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  function closeSubs(except) {
+    subs.forEach(function (s) {
+      if (s === except) return;
+      s.classList.remove('is-open');
+      var tg = $('.nav__subtoggle', s);
+      if (tg) tg.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  subs.forEach(function (sub) {
+    var toggle = $('.nav__subtoggle', sub);
+
+    function open(state) {
+      sub.classList.toggle('is-open', state);
+      toggle.setAttribute('aria-expanded', String(state));
+      if (state) closeSubs(sub);
+    }
+
+    if (canHover) {
+      sub.addEventListener('mouseenter', function () { open(true); });
+      sub.addEventListener('mouseleave', function () { open(false); });
+      sub.addEventListener('focusin',  function () { open(true); });
+      sub.addEventListener('focusout', function (e) {
+        if (!sub.contains(e.relatedTarget)) open(false);
+      });
+    }
+
+    toggle.addEventListener('click', function (e) {
+      /* on touch / in the drawer the first tap reveals the children */
+      if (!canHover || nav.classList.contains('is-open')) {
+        if (!sub.classList.contains('is-open')) {
+          e.preventDefault();
+          open(true);
+        }
+      }
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-sub]')) closeSubs();
+  });
+
+  /* ── section tabs (renovation page) ────────────────────── */
+  if (tabsBar) {
+    var tabLinks = $$('a', tabsBar);
+    var tabSecs  = tabLinks.map(function (a) { return $(a.getAttribute('href')); }).filter(Boolean);
+    if ('IntersectionObserver' in window && tabSecs.length) {
+      var tabIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          tabLinks.forEach(function (a) {
+            var on = a.getAttribute('href') === '#' + en.target.id;
+            a.classList.toggle('is-active', on);
+            if (on && tabsBar.scrollWidth > tabsBar.clientWidth) {
+              a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+            }
+          });
+        });
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      tabSecs.forEach(function (s) { tabIO.observe(s); });
+    }
+  }
+
+  /* ── Kalasham countdown ────────────────────────────────── */
+  var cd = $('#countdown');
+  if (cd) {
+    var target = new Date(cd.dataset.target).getTime();
+    var box    = $('#cdDays');
+    var diff   = target - Date.now();
+    var days   = Math.max(0, Math.ceil(diff / 86400000));
+    if (box) box.textContent = days.toLocaleString('en-IN');
+    if (diff <= 0) cd.classList.add('is-past');
+  }
 
   /* ── reveal on scroll ──────────────────────────────────── */
   var reveals = $$('.reveal');
@@ -212,8 +387,8 @@
   $$('[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var text = btn.dataset.copy;
-      var done = function () { say('പകർത്തി: ' + text); };
-      var fail = function () { say('പകർത്താൻ കഴിഞ്ഞില്ല'); };
+      var done = function () { say(t('copied') + text); };
+      var fail = function () { say(t('copyFail')); };
 
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(done, fail);
@@ -229,7 +404,14 @@
     });
   });
 
-  /* ── lightbox ──────────────────────────────────────────── */
+  /* Escape closes the drawer — registered even on pages with no gallery */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) setNav(false);
+  });
+
+  /* ── lightbox ──────────────────────────────────────────
+     Only the gallery page has one, so everything below is
+     guarded on its presence. */
   var lb    = $('#lb');
   var lbImg = $('#lbImg');
   var lbCap = $('#lbCap');
@@ -237,12 +419,19 @@
   var idx   = 0;
   var lastFocus = null;
 
+  if (lb && lbImg && lbCap && items.length) {
+
   function show(i) {
     idx = (i + items.length) % items.length;
-    var it = items[idx];
+    var it  = items[idx];
+    var ml  = it.dataset.cap || '';
+    var en  = it.dataset.capEn || ml;
+    var txt = (lang === 'en') ? en : ml;
     lbImg.src = it.dataset.full;
-    lbImg.alt = it.dataset.cap || '';
-    lbCap.textContent = it.dataset.cap || '';
+    lbImg.alt = txt;
+    lbCap.textContent = txt;
+    lbCap.dataset.ml = ml;          /* so a language switch mid-view updates it */
+    lbCap.dataset.en = en;
   }
 
   function openLB(i) {
@@ -275,10 +464,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (lb.hidden) {
-      if (e.key === 'Escape' && nav.classList.contains('is-open')) setNav(false);
-      return;
-    }
+    if (lb.hidden) return;
     if (e.key === 'Escape')     closeLB();
     if (e.key === 'ArrowLeft')  show(idx - 1);
     if (e.key === 'ArrowRight') show(idx + 1);
@@ -299,6 +485,8 @@
     if (Math.abs(dx) > 55) show(dx > 0 ? idx - 1 : idx + 1);
     tx = null;
   }, { passive: true });
+
+  } /* end lightbox guard */
 
   /* ── footer year ───────────────────────────────────────── */
   var yr = $('#yr');
