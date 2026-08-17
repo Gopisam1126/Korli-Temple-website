@@ -876,13 +876,17 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
 
 /* ── toast ──────────────────────────────────────────────── */
 .toast{
-  position:fixed; left:50%; bottom:2rem; transform:translate(-50%,140%);
+  position:fixed; left:50%; bottom:2rem;
   z-index:400; background:var(--ink); color:var(--paper);
   padding:.75rem 1.5rem; font-size:.9rem; letter-spacing:.02em;
-  transition:transform .4s var(--ease);
   pointer-events:none;
+  /* Hidden by opacity/visibility, not by shifting it off-screen: while
+     empty the box is only its padding tall, so a percentage translate
+     is too small to clear `bottom` and leaves it peeking. */
+  opacity:0; visibility:hidden; transform:translate(-50%,.75rem);
+  transition:opacity .3s var(--ease), transform .4s var(--ease), visibility .4s;
 }
-.toast.is-on{ transform:translate(-50%,0); }
+.toast.is-on{ opacity:1; visibility:visible; transform:translate(-50%,0); }
 
 /* ── reveal ─────────────────────────────────────────────── */
 .reveal{
