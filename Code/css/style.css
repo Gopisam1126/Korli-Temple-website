@@ -962,7 +962,8 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
   }
   .nav__sub li:last-child a{ border-bottom:1px solid var(--line); }
   .nav__list a.nav__subtoggle{ display:flex; justify-content:space-between; }
-  .langsw{ order:-1; align-self:flex-start; margin-bottom:1.4rem; }
+  /* scoped to the drawer copy: .langsw--bar must keep its place in the header row */
+  .nav .langsw{ order:-1; align-self:flex-start; margin-bottom:1.4rem; }
   .hero{ min-height:92svh; padding-top:7rem; }
   .work,
   .works--compact .work{ grid-template-columns:auto 1fr; }
@@ -1093,3 +1094,36 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
   .kramam__list li{ grid-template-columns:auto 1fr; gap:.6rem .9rem; }
   .qr__fig img{ width:min(100%,230px); }
 }
+
+/* ── mobile language toggle in the header bar ───────────────
+   Two switchers exist: the one inside .nav for desktop, and this
+   one in the header bar for mobile, so the language can be changed
+   without opening the drawer. Only ever one is displayed, and
+   applyLang() drives both. On mobile only the INACTIVE language
+   shows, making it a compact one-tap switch. */
+.langsw--bar{ display:none; }
+.langsw--bar button{ display:inline-flex; align-items:center; gap:.4rem; }
+.langsw--bar svg{ flex:0 0 auto; opacity:.85; }
+
+@media (max-width:860px){
+  .nav .langsw{ display:none; }
+  .langsw--bar{ display:flex; order:0; flex:0 0 auto; margin-left:auto; }
+  /* show only the language you are NOT in — one tap swaps */
+  .langsw--bar button.is-on{ display:none; }
+  .langsw--bar button{ padding:.46rem .85rem; font-size:.84rem; }
+  /* it sits above the open drawer, in the drawer's empty top padding,
+     so the language stays changeable while the menu is open */
+  .hdr.is-navopen .langsw--bar{ position:relative; z-index:2; }
+  .burger{ margin-left:.35rem; }
+}
+@media (max-width:400px){
+  /* no hard cap on the brand: .brand has min-width:0 and the name
+     ellipsises, so flex gives it whatever the toggle and burger leave */
+  .langsw--bar button{ padding:.42rem .7rem; font-size:.8rem; }
+  .langsw--bar svg{ width:13px; height:13px; }
+}
+/* the bar toggle is a primary control on mobile — give it more contrast
+   than the desktop switcher's muted grey (#7a7167 was ~4.3:1 on cream) */
+.hdr.is-stuck .langsw--bar button,
+.hdr--solid .langsw--bar button,
+.hdr.is-navopen .langsw--bar button{ color:var(--ink-2); }

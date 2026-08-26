@@ -81,6 +81,25 @@
       </a>
     </nav>
 
+    <!-- mobile-only language toggle: lives in the header bar, not the drawer,
+         so it is reachable without opening the menu -->
+    <div class="langsw langsw--bar" role="group" aria-label="Language / ഭാഷ">
+      <button type="button" data-lang-set="ml">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M3 12h18M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"
+                fill="none" stroke="currentColor" stroke-width="1.6"/>
+        </svg><span>മലയാളം</span>
+      </button>
+      <button type="button" data-lang-set="en">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M3 12h18M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"
+                fill="none" stroke="currentColor" stroke-width="1.6"/>
+        </svg><span>English</span>
+      </button>
+    </div>
+
     <button class="burger" id="burger" aria-label="മെനു തുറക്കുക" aria-expanded="false" aria-controls="nav">
       <span></span><span></span><span></span>
     </button>
