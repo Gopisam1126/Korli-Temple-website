@@ -6,6 +6,17 @@
 
   var $  = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+
+  /* Resolve a link's href to the section it points at, but ONLY for same-page
+     fragments. A host may rewrite links to pretty URLs (renovation.html ->
+     /renovation); those are not valid CSS selectors, and querySelector would
+     throw a SyntaxError that kills the whole script. getElementById skips
+     selector parsing entirely, so nothing here can throw. */
+  var sectionFor = function (a) {
+    var href = (a && a.getAttribute('href')) || '';
+    if (href.charAt(0) !== '#' || href.length < 2) return null;
+    return document.getElementById(href.slice(1));
+  };
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ── language ──────────────────────────────────────────
@@ -198,7 +209,7 @@
   /* ── section tabs (renovation page) ────────────────────── */
   if (tabsBar) {
     var tabLinks = $$('a', tabsBar);
-    var tabSecs  = tabLinks.map(function (a) { return $(a.getAttribute('href')); }).filter(Boolean);
+    var tabSecs  = tabLinks.map(sectionFor).filter(Boolean);
     if ('IntersectionObserver' in window && tabSecs.length) {
       var tabIO = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
@@ -248,9 +259,7 @@
 
   /* ── active nav link ───────────────────────────────────── */
   var navLinks = $$('.nav__list a, .nav__cta');
-  var sections = navLinks
-    .map(function (a) { return $(a.getAttribute('href')); })
-    .filter(Boolean);
+  var sections = navLinks.map(sectionFor).filter(Boolean);
 
   if ('IntersectionObserver' in window && sections.length) {
     var navIO = new IntersectionObserver(function (entries) {

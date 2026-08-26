@@ -1000,3 +1000,96 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
   .sec--dark,.ftr,.total--grand{ background:#fff!important; color:#000!important; }
   .sec--dark h2,.prose--light p,.verdict__text{ color:#000!important; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Additions — Aug 2026 content update
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── larger Kalasham heading (restrained bump) ──────────────── */
+.h2--lg{ font-size:clamp(2.1rem,1.5rem + 2.7vw,3.5rem); line-height:1.22; }
+
+/* ── works list: explanation + amount in words ─────────────── */
+.works .work__body p{
+  margin-top:.55rem; color:var(--ink-2); font-size:.94rem; line-height:1.75; max-width:60ch;
+}
+.work__cost{ display:flex; flex-direction:column; align-items:flex-end; gap:.2rem; text-align:right; }
+.work__amt{ white-space:nowrap; }
+.work__words{
+  font-family:var(--f-body); font-size:.78rem; line-height:1.5;
+  color:var(--ink-3); max-width:15rem; white-space:normal;
+}
+.total__words{ font-size:.84rem; }
+.lede--sm{ font-size:.92rem; color:var(--ink-3); margin-top:.9rem; }
+
+/* ── Kalasham order of rites ────────────────────────────────── */
+.kramam{ margin-top:clamp(2.2rem,4vw,3rem); }
+.kramam__h{
+  font-family:var(--f-display); font-size:1.25rem; color:var(--on-dark); margin-bottom:.5rem;
+}
+.kramam__note{ font-size:.9rem; color:var(--on-dark-2); margin-bottom:1.6rem; }
+.kramam__note b{ color:var(--gold-soft); font-weight:400; }
+.kramam__list{ display:grid; gap:0; border-top:1px solid var(--line-dark); }
+.kramam__list li{
+  display:grid; grid-template-columns:auto 1fr; gap:1rem 1.2rem; align-items:start;
+  padding:.95rem 0; border-bottom:1px solid var(--line-dark);
+}
+.kramam__d{
+  font-family:var(--f-latin); font-size:1.15rem; line-height:1.4; color:var(--gold);
+  font-variant-numeric:lining-nums; min-width:1.8rem; text-align:right;
+}
+.kramam__t{ font-size:.93rem; line-height:1.7; color:var(--on-dark-2); }
+.kramam__t b{
+  display:inline-block; font-family:var(--f-latin); font-weight:500; font-size:.95rem;
+  letter-spacing:.06em; color:var(--on-dark); margin-right:.55rem;
+  font-variant-numeric:lining-nums;
+}
+.kramam__t em{
+  display:inline-block; margin-left:.5rem; padding:.1rem .55rem; font-style:normal;
+  font-size:.76rem; border:1px solid var(--gold); color:var(--gold-soft); white-space:nowrap;
+}
+.kramam__list li.is-key{ background:linear-gradient(90deg,rgba(163,79,46,.16),transparent 70%); }
+.kramam__list li.is-key .kramam__d{ color:var(--laterite); }
+
+/* ── UPI QR ─────────────────────────────────────────────────── */
+.qr{ border:1px solid var(--line-2); padding:clamp(1.8rem,3vw,2.4rem); }
+.qr__fig{ text-align:center; }
+.qr__fig img{
+  width:min(100%,260px); height:auto; margin-inline:auto;
+  background:#fff; padding:10px; border:1px solid var(--line);
+}
+.qr__fig figcaption{
+  margin-top:1rem; display:flex; flex-wrap:wrap; gap:.6rem;
+  align-items:center; justify-content:center;
+}
+.qr__vpa{
+  font-family:var(--f-latin); font-size:.9rem; letter-spacing:.03em; color:var(--ink-2);
+  word-break:break-all; font-variant-numeric:lining-nums;
+}
+.qr__note{ margin-top:.9rem; text-align:center; font-size:.86rem; color:var(--ink-3); }
+.bank__reg{
+  margin-top:1.2rem; padding-top:1.1rem; border-top:1px solid var(--line);
+  font-size:.82rem; line-height:1.7; color:var(--ink-3);
+}
+.bank__reg b{ color:var(--ink-2); font-weight:700; }
+
+/* ── footer: socials + registration ─────────────────────────── */
+.ftr__social{
+  display:flex; flex-wrap:wrap; gap:1.1rem 2rem;
+  padding-block:1.5rem; border-top:1px solid var(--line-dark);
+}
+.ftr__social a{
+  display:inline-flex; align-items:center; gap:.55rem;
+  font-size:.86rem; letter-spacing:.02em; color:var(--on-dark-2);
+  transition:color .25s;
+}
+.ftr__social a:hover{ color:var(--gold-soft); }
+.ftr__social svg{ flex:0 0 auto; }
+.ftr__social span{ word-break:break-all; }
+.ftr__reg{ font-variant-numeric:lining-nums; }
+
+@media (max-width:860px){
+  .work__cost{ align-items:flex-start; text-align:left; }
+  .work__words{ max-width:none; }
+  .kramam__list li{ grid-template-columns:auto 1fr; gap:.6rem .9rem; }
+  .qr__fig img{ width:min(100%,230px); }
+}
