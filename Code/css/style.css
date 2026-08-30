@@ -1127,3 +1127,28 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
 .hdr.is-stuck .langsw--bar button,
 .hdr--solid .langsw--bar button,
 .hdr.is-navopen .langsw--bar button{ color:var(--ink-2); }
+
+/* ── footer: directions QR ──────────────────────────────────── */
+.ftr__map{
+  display:flex; align-items:center; gap:1rem;
+  margin-top:1.5rem; padding-top:1.4rem; border-top:1px solid var(--line-dark);
+}
+.ftr__map__qr{
+  flex:0 0 auto; display:block; background:#fff; padding:6px;
+  border:1px solid var(--line-dark); line-height:0;
+  transition:border-color .25s var(--ease);
+}
+.ftr__map__qr:hover{ border-color:var(--gold-soft); }
+.ftr__map__qr img{ width:88px; height:88px; }
+.ftr__map__txt{ min-width:0; }
+.ftr__map__txt p{ color:var(--on-dark); font-size:.92rem; margin-bottom:.3rem; }
+.ftr__map__txt > a{
+  display:inline-block; font-size:.88rem; color:var(--gold-soft);
+  border-bottom:1px solid transparent; transition:border-color .25s;
+}
+.ftr__map__txt > a:hover{ border-bottom-color:var(--gold-soft); }
+.ftr__map__hint{ display:block; margin-top:.35rem; font-size:.8rem; color:var(--on-dark-2); }
+
+@media (max-width:560px){
+  .ftr__map__qr img{ width:76px; height:76px; }
+}
