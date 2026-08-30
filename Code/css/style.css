@@ -1128,27 +1128,28 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
 .hdr--solid .langsw--bar button,
 .hdr.is-navopen .langsw--bar button{ color:var(--ink-2); }
 
-/* ── footer: directions QR ──────────────────────────────────── */
-.ftr__map{
-  display:flex; align-items:center; gap:1rem;
-  margin-top:1.5rem; padding-top:1.4rem; border-top:1px solid var(--line-dark);
+/* ── footer: directions link ────────────────────────────────── */
+.ftr__dir{ margin-top:1.1rem; }
+.ftr__dir a{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-size:.9rem; color:var(--gold-soft);
+  border-bottom:1px solid transparent; transition:border-color .25s, color .25s;
 }
-.ftr__map__qr{
-  flex:0 0 auto; display:block; background:#fff; padding:6px;
-  border:1px solid var(--line-dark); line-height:0;
-  transition:border-color .25s var(--ease);
+.ftr__dir a:hover{ color:var(--on-dark); border-bottom-color:currentColor; }
+.ftr__dir svg{ flex:0 0 auto; }
+
+/* ── two codes in one card ──────────────────────────────────── */
+.qr__cap{
+  font-size:.88rem; color:var(--ink-2); text-align:center; margin-bottom:.9rem;
 }
-.ftr__map__qr:hover{ border-color:var(--gold-soft); }
-.ftr__map__qr img{ width:88px; height:88px; }
-.ftr__map__txt{ min-width:0; }
-.ftr__map__txt p{ color:var(--on-dark); font-size:.92rem; margin-bottom:.3rem; }
-.ftr__map__txt > a{
-  display:inline-block; font-size:.88rem; color:var(--gold-soft);
+.qr__fig + .qr__fig{
+  margin-top:1.8rem; padding-top:1.6rem; border-top:1px solid var(--line);
+}
+.qr__fig--map img{ width:min(100%,170px); }
+.qr__fig--map a{ display:block; line-height:0; }
+.qr__link{
+  font-size:.88rem; color:var(--laterite);
   border-bottom:1px solid transparent; transition:border-color .25s;
 }
-.ftr__map__txt > a:hover{ border-bottom-color:var(--gold-soft); }
-.ftr__map__hint{ display:block; margin-top:.35rem; font-size:.8rem; color:var(--on-dark-2); }
-
-@media (max-width:560px){
-  .ftr__map__qr img{ width:76px; height:76px; }
-}
+.qr__link:hover{ border-bottom-color:currentColor; }
+.qr__fig .qr__note{ margin-top:.75rem; }
