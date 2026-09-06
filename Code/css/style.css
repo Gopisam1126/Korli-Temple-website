@@ -704,8 +704,8 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
 .ba__range:focus-visible + .ba__tag,
 .ba:has(.ba__range:focus-visible){ outline:2px solid var(--laterite); outline-offset:3px; }
 
-.renders{                                    /* four renders → clean 2×2 */
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));
+.renders{                          /* three renders → one clean row on desktop */
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));
   gap:clamp(1.5rem,3vw,2.2rem); margin-top:clamp(3rem,6vw,5rem);
 }
 .renders .fig img{ aspect-ratio:16/10; object-fit:cover; }
@@ -1153,3 +1153,16 @@ h3{ font-size:clamp(1.15rem,1.05rem + .4vw,1.35rem); }
 }
 .qr__link:hover{ border-bottom-color:currentColor; }
 .qr__fig .qr__note{ margin-top:.75rem; }
+
+/* ── footer contacts: name over designation ─────────────────── */
+.ftr__c li{ margin-bottom:.85rem; }
+.ftr__c li a{ display:block; }
+.ftr__c__nm{ display:block; }
+.ftr__c__ro{
+  /* --ink-3 is a light-background token; on the dark footer it lands at
+     3.5:1, under AA for text this size. Dim the on-dark token instead. */
+  display:block; margin-top:.1rem; font-size:.8rem;
+  color:var(--on-dark-2); opacity:.78;
+  transition:opacity .25s;
+}
+.ftr a:hover .ftr__c__ro{ opacity:1; }
